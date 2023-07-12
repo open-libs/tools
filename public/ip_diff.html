@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>IP Address Comparison Tool</title>
+	<style>
+		textarea {
+			width: 200px;
+			height: 400px;
+		}
+	</style>
+</head>
+<body>
+	<h1>IP Address Comparison Tool</h1>
+	<table> 
+		<tr>
+			<td>
+			<label for="list1" id="label_total">Whole IP list</label><br>
+			<textarea id="list1" name="list1"></textarea>
+			</td>
+			<td>
+			<label for="list2" id="label_sub">Sub IP list</label><br>
+			<textarea id="list2" name="list2"></textarea>
+			</td>
+		</tr>
+	</table>
+
+	<div>
+		<button type="button" onclick="compare()">Compare</button>
+		<button type="button" onclick="copy()">Copy</button>
+	</div>
+	<div>
+		<p id="result_title"></p>
+		<p id="result"></p>
+	</div>
+	<script>
+		// Load the previous inputs from localStorage
+		window.onload = function() {
+			var list1 = localStorage.getItem("list1");
+			if (list1 != null) {
+				document.getElementById("list1").value = list1;
+			}
+			var list2 = localStorage.getItem("list2");
+			if (list2 != null) {
+				document.getElementById("list2").value = list2;
+			}
+
+		};
+
+		function compare() {
+			// Get the IP addresses from the textareas
+			var list1 = document.getElementById("list1").value.trim().split("\n");
+			var list2 = document.getElementById("list2").value.trim().split("\n");
+
+			// Find the IP addresses in list 1 that are not in list 2
+			var result = [];
+			for (var i = 0; i < list1.length; i++) {
+				if (list2.indexOf(list1[i]) == -1) {
+					result.push(list1[i]);
+				}
+			}
+
+			// Display the result
+			var resultElem = document.getElementById("result");
+			var resultTitleElem = document.getElementById("result_title");
+			var summary = `${list2.length} / ${list1.length}`
+			if (result.length == 0) {
+				resultTitleElem.innerHTML = "Total ${list1.length}, Sub ${list2.length}, No IP addresses found in List 1 that are not in List 2.";
+				// resultElem.innerHTML = 
+			} else {
+				resultTitleElem.innerHTML = `Total ${list1.length}, Sub ${list2.length}, Found ${result.length} IP addresses:<br>` ;
+				resultElem.innerHTML = result.join("<br>");
+			}
+
+			// Save the inputs to localStorage
+			localStorage.setItem("list1", document.getElementById("list1").value);
+			localStorage.setItem("list2", document.getElementById("list2").value);
+		}
+
+		function copy() {
+			// Get the result element
+			var resultElem = document.getElementById("result");
+
+			// Copy the result to the clipboard
+			var range = document.createRange();
+			range.selectNode(resultElem);
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
+			document.execCommand("copy");
+			window.getSelection().removeAllRanges();
+		}
+	</script>
+</body>
+</html>
